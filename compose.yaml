@@ -1,1 +1,28 @@
-services: {}
+version: '3.9'
+services:
+  app:
+    build: .
+    container_name: coupon-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/coupondb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+  db:
+    image: postgres:15
+    container_name: coupon-db
+    environment:
+      POSTGRES_DB: coupondb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - coupon-data:/var/lib/postgresql/data
+
+volumes:
+  coupon-data:

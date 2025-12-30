@@ -78,6 +78,20 @@ public class CouponEntity {
         );
     }
 
+    public static CouponEntity restore(
+            UUID id,
+            String code,
+            String description,
+            BigDecimal discountValue,
+            OffsetDateTime expirationDate,
+            CouponStatus status,
+            boolean published,
+            boolean redeemed
+    ) {
+        return new CouponEntity(id, code, description, discountValue, expirationDate, status, published, redeemed);
+    }
+
+
     public void markAsDeleted() {
         this.status = CouponStatus.DELETED;
     }

@@ -57,6 +57,29 @@ class CouponServiceTest {
     }
 
     @Test
+    void shouldGetCouponById() {
+        UUID id = UUID.randomUUID();
+        CouponEntity entity = CouponEntity.restore(
+                id,
+                "ABC123",
+                "Teste",
+                new BigDecimal("0.8"),
+                OffsetDateTime.now().plusDays(1),
+                CouponStatus.ACTIVE,
+                false,
+                false
+        );
+
+        when(gateway.findById(id)).thenReturn(Optional.of(entity));
+
+        Coupon coupon = service.getById(id);
+
+        assertEquals(id, coupon.getId());
+        assertEquals("ABC123", coupon.getCode());
+        assertEquals(CouponStatus.ACTIVE, coupon.getStatus());
+    }
+
+    @Test
     void getByIdShouldThrowIfNotFound() {
         UUID id = UUID.randomUUID();
         when(gateway.findById(id)).thenReturn(Optional.empty());
@@ -67,15 +90,16 @@ class CouponServiceTest {
     @Test
     void getByIdShouldThrowIfDeleted() {
         UUID id = UUID.randomUUID();
-        Coupon coupon = Coupon.create(
+        CouponEntity entity = CouponEntity.restore(
+                id,
                 "ABC123",
                 "Teste",
                 new BigDecimal("0.8"),
                 OffsetDateTime.now().plusDays(1),
+                CouponStatus.DELETED,
+                false,
                 false
         );
-
-        CouponEntity entity = CouponEntity.from(coupon);
         when(gateway.findById(id)).thenReturn(Optional.of(entity));
 
         assertThrows(CouponAlreadyDeletedException.class, () -> service.getById(id));
@@ -84,21 +108,41 @@ class CouponServiceTest {
     @Test
     void shouldDeleteCoupon() {
         UUID id = UUID.randomUUID();
-        Coupon coupon = Coupon.create(
+        CouponEntity entity = CouponEntity.restore(
+                id,
                 "ABC123",
                 "Teste",
                 new BigDecimal("0.8"),
                 OffsetDateTime.now().plusDays(1),
+                CouponStatus.ACTIVE,
+                false,
                 false
         );
-
-        CouponEntity entity = CouponEntity.from(coupon);
         when(gateway.findById(id)).thenReturn(Optional.of(entity));
 
         service.delete(id);
 
         assertEquals(CouponStatus.DELETED, entity.getStatus());
         verify(gateway, times(1)).save(entity);
+    }
+
+    @Test
+    void deleteShouldThrowIfAlreadyDeleted() {
+        UUID id = UUID.randomUUID();
+        CouponEntity entity = CouponEntity.restore(
+                id,
+                "ABC123",
+                "Teste",
+                new BigDecimal("0.8"),
+                OffsetDateTime.now().plusDays(1),
+                CouponStatus.DELETED,
+                false,
+                false
+        );
+        when(gateway.findById(id)).thenReturn(Optional.of(entity));
+
+        assertThrows(CouponAlreadyDeletedException.class, () -> service.delete(id));
+        verify(gateway, never()).save(any());
     }
 
     @Test
@@ -110,4 +154,3 @@ class CouponServiceTest {
     }
 
 }
-
