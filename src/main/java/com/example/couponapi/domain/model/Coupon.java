@@ -18,7 +18,7 @@ public class Coupon {
     private final BigDecimal discountValue;
     private final OffsetDateTime expirationDate;
 
-    private CouponStatus status;
+    private final CouponStatus status;
     private final boolean published;
     private final boolean redeemed;
 
