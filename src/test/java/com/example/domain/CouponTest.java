@@ -25,7 +25,7 @@ class CouponTest {
         );
 
         assertNotNull(coupon.getId());
-        assertEquals("ABC-123", coupon.getCode()); // note: original code returned
+        assertEquals("ABC-123", coupon.getCode());
         assertEquals(new BigDecimal("0.8"), coupon.getDiscountValue());
         assertEquals(CouponStatus.ACTIVE, coupon.getStatus());
         assertFalse(coupon.isPublished());
@@ -57,11 +57,7 @@ class CouponTest {
 
     @Test
     void shouldNormalizeCode() {
-        // código com caracteres especiais e minúsculas
         Coupon coupon = Coupon.create("aBc-1!@#", "Descrição", new BigDecimal("0.8"), OffsetDateTime.now().plusDays(1), false);
-
-        // o normalizeCode é interno, mas podemos testar pelo fluxo de validação:
-        // aqui apenas garantimos que não lança exceção
         assertNotNull(coupon);
     }
 
